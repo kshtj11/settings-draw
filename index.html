@@ -76,7 +76,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px;
+    height: 56px;
     z-index: 6;
     touch-action: none;
     cursor: grab;
@@ -362,6 +362,7 @@
             state = 2;
             bottomBar.classList.add('visible'); bottomBar.style.transform = '';
             drawer.classList.add('visible'); drawer.style.transform = '';
+            swipeZone.style.pointerEvents = 'none';
           } else if (dy > 60) {
             state = 1;
             bottomBar.classList.add('visible'); bottomBar.style.transform = '';
@@ -383,6 +384,7 @@
           if (dy > 100) {
             state = 2;
             drawer.classList.add('visible'); drawer.style.transform = '';
+            swipeZone.style.pointerEvents = 'none';
           } else if (dy < -60) {
             state = 0;
             bottomBar.classList.remove('visible'); bottomBar.style.transform = '';
@@ -406,6 +408,7 @@
         if (dy < -100) {
           state = 1;
           drawer.classList.remove('visible'); drawer.style.transform = '';
+          swipeZone.style.pointerEvents = '';
         } else {
           drawer.style.transform = '';
         }
@@ -413,8 +416,25 @@
     }
   });
 
-  // Scroll indicator
+  // Drag-to-scroll for content area
   const contentScroll = document.getElementById('contentScroll');
+  let cDrag = false, cStartY = 0, cScrollTop = 0;
+
+  contentScroll.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.dot-grid') || e.target.closest('.sound-bars')) return;
+    cDrag = true;
+    cStartY = e.clientY;
+    cScrollTop = contentScroll.scrollTop;
+    contentScroll.setPointerCapture(e.pointerId);
+  });
+  contentScroll.addEventListener('pointermove', (e) => {
+    if (!cDrag) return;
+    contentScroll.scrollTop = cScrollTop - (e.clientY - cStartY);
+  });
+  contentScroll.addEventListener('pointerup', () => cDrag = false);
+  contentScroll.addEventListener('pointercancel', () => cDrag = false);
+
+  // Scroll indicator
   const scrollDots = document.querySelectorAll('.scroll-dot');
 
   contentScroll.addEventListener('scroll', () => {
