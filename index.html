@@ -36,47 +36,67 @@
   }
   .home-screen img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* Invisible swipe-up zone at bottom */
+  /* Swipe zone at bottom of home */
   .swipe-zone {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
+    bottom: 0; left: 0;
+    width: 100%; height: 80px;
     z-index: 5;
     touch-action: none;
   }
 
-  .bottom-bar {
+  /* Dock — app icons, slides up first */
+  .dock {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 540px;
-    height: 149px;
-    z-index: 2;
+    bottom: 0; left: 0;
+    width: 540px; height: 149px;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
     transform: translateY(100%);
-    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease;
+    touch-action: none;
   }
-  .bottom-bar.visible { transform: translateY(0); pointer-events: auto; }
+  .dock svg { display: block; }
+  .dock.visible { transform: translateY(0); }
+  .dock.fade { opacity: 0; pointer-events: none; }
 
-  .settings-drawer {
+  /* Nav bar — shape icons, fixed bottom bar for settings */
+  .nav-bar {
     position: absolute;
-    inset: 0;
+    bottom: 0; left: 0;
+    width: 540px; height: 80px;
+    background: #000;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    touch-action: none;
+  }
+  .nav-bar.visible { opacity: 1; pointer-events: auto; }
+
+  /* Settings panel — slides up behind the nav bar */
+  .settings-panel {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    bottom: 80px;
     z-index: 3;
     background: #000;
-    transform: translateY(100%);
+    transform: translateY(620px);
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
-  .settings-drawer.visible { transform: translateY(0); }
+  .settings-panel.visible { transform: translateY(0); }
 
   /* Dismiss handle at top of settings */
   .dismiss-handle {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 56px;
+    top: 0; left: 0;
+    width: 100%; height: 56px;
     z-index: 6;
     touch-action: none;
     cursor: grab;
@@ -87,8 +107,7 @@
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    width: 500px;
-    height: 32px;
+    width: 500px; height: 32px;
     left: calc(50% - 250px);
     top: 24px;
     pointer-events: none;
@@ -111,10 +130,8 @@
 
   .content-scroll {
     position: absolute;
-    top: 76px;
-    left: 22px;
-    width: 492px;
-    bottom: 48px;
+    top: 76px; left: 22px;
+    width: 492px; bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
@@ -174,14 +191,10 @@
   .sound-bar { width: 2px; height: 40px; border-radius: 2px; background: #151515; }
   .sound-bar.active { background: #DDDDDD; }
 
-  .slider {
-    display: flex; justify-content: center; align-items: center; gap: 16px;
-    position: absolute; height: 20px; left: 50%; transform: translateX(-50%); top: 572px;
-  }
-
   .scroll-indicator {
     display: flex; flex-direction: column; gap: 20px;
-    position: absolute; width: 8px; right: 8px; top: 250px;
+    position: absolute; width: 8px; right: 8px; top: 50%;
+    transform: translateY(-50%);
   }
   .scroll-dot { width: 8px; height: 8px; border-radius: 50%; background: #505050; }
   .scroll-dot.active { background: #D9D9D9; }
@@ -192,43 +205,58 @@
 <div class="device-frame" id="deviceFrame">
   <div class="home-screen"><img src="home.png" alt="Home"></div>
 
-  <!-- Invisible zone at bottom for swipe-up -->
   <div class="swipe-zone" id="swipeZone"></div>
 
-  <div class="bottom-bar" id="bottomBar">
+  <!-- Dock — app icons, appears on first swipe -->
+  <div class="dock" id="dock">
     <svg width="540" height="149" viewBox="0 0 540 149" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(267.133 238.56) rotate(-90) scale(239.477 532.255)">
-          <stop offset="0.394231" stop-color="black" stop-opacity="1"/>
-          <stop offset="0.740385" stop-color="black" stop-opacity="0.63"/>
-          <stop offset="1" stop-color="black" stop-opacity="0"/>
-        </radialGradient>
-        <clipPath id="clip0"><rect width="540" height="149" fill="white"/></clipPath>
-      </defs>
-      <g clip-path="url(#clip0)">
-        <ellipse cx="270.5" cy="129.5" rx="354.5" ry="159.5" fill="url(#paint0_radial)"/>
-        <rect x="55.4004" y="66" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6"/>
-        <path d="M80.5578 86.2959C76.7785 86.2959 73.7148 89.3596 73.7148 93.1388C73.7148 94.9562 74.4233 96.6082 75.5792 97.8335L75.7154 97.9812L87.4377 109.703L99.0786 97.9812C100.319 96.7426 101.087 95.0303 101.087 93.1388C101.087 89.3596 98.0229 86.2959 94.2436 86.2959C90.4644 86.2959 87.4007 89.3596 87.4007 93.1388C87.4007 89.3596 84.337 86.2959 80.5578 86.2959Z" stroke="#D9D9D9" stroke-width="3"/>
-        <rect x="148.199" y="47" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6"/>
-        <circle cx="179.556" cy="79.5556" r="10.0556" stroke="white" stroke-width="3"/>
-        <path d="M187.645 87.6444L194 94" stroke="white" stroke-width="3"/>
-        <rect x="241" y="40" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6"/>
-        <path d="M278.182 78.1818H285V60H266.818V66.8182M278.182 78.1818V66.8182H266.818M278.182 78.1818V85H260V66.8182H266.818" stroke="white" stroke-width="3"/>
-        <rect x="333.801" y="47" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6"/>
-        <path d="M363 92H369" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <path d="M366 67.5C371.799 67.5 376.5 72.201 376.5 78V86.5H355.5V78C355.5 72.201 360.201 67.5 366 67.5Z" stroke="white" stroke-width="3"/>
-        <rect x="426.6" y="67" width="64" height="64" rx="18" fill="#3E3E3E"/>
-        <path d="M449 105H458" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <path d="M469 93L460 93" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <path d="M467 105H469" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <path d="M451 93L449 93" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <circle cx="461.5" cy="104.5" r="3.5" stroke="white" stroke-width="3" stroke-linecap="square"/>
-        <circle cx="456.5" cy="93.5" r="3.5" transform="rotate(-180 456.5 93.5)" stroke="white" stroke-width="3" stroke-linecap="square"/>
-      </g>
+<g clip-path="url(#clip0_510_793)">
+<ellipse cx="270.5" cy="129.5" rx="354.5" ry="159.5" fill="url(#paint0_radial_510_793)"/>
+<rect x="55.4004" y="66" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6" style="fill:#202020;fill:color(display-p3 0.1250 0.1250 0.1250);fill-opacity:0.6;"/>
+<path d="M80.5578 86.2959C76.7785 86.2959 73.7148 89.3596 73.7148 93.1388C73.7148 94.9562 74.4233 96.6082 75.5792 97.8335L75.7154 97.9812L87.4377 109.703L99.0786 97.9812C100.319 96.7426 101.087 95.0303 101.087 93.1388C101.087 89.3596 98.0229 86.2959 94.2436 86.2959C90.4644 86.2959 87.4007 89.3596 87.4007 93.1388C87.4007 89.3596 84.337 86.2959 80.5578 86.2959Z" stroke="#D9D9D9" stroke-width="3"/>
+<rect x="148.199" y="47" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6" style="fill:#202020;fill:color(display-p3 0.1250 0.1250 0.1250);fill-opacity:0.6;"/>
+<circle cx="179.556" cy="79.5556" r="10.0556" stroke="white" stroke-width="3"/>
+<path d="M187.645 87.6444L194 94" stroke="white" stroke-width="3"/>
+<rect x="241" y="40" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6" style="fill:#202020;fill:color(display-p3 0.1250 0.1250 0.1250);fill-opacity:0.6;"/>
+<path d="M278.182 78.1818H285V60H266.818V66.8182M278.182 78.1818V66.8182H266.818M278.182 78.1818V85H260V66.8182H266.818" stroke="white" stroke-width="3"/>
+<rect x="333.801" y="47" width="64" height="64" rx="18" fill="#202020" fill-opacity="0.6" style="fill:#202020;fill:color(display-p3 0.1250 0.1250 0.1250);fill-opacity:0.6;"/>
+<path d="M363 92H369" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<path d="M366 67.5C371.799 67.5 376.5 72.201 376.5 78V86.5H355.5V78C355.5 72.201 360.201 67.5 366 67.5Z" stroke="white" stroke-width="3"/>
+<rect x="426.6" y="67" width="64" height="64" rx="18" fill="#3E3E3E" style="fill:#3E3E3E;fill:color(display-p3 0.2414 0.2414 0.2414);fill-opacity:1;"/>
+<path d="M449 105H458" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<path d="M469 93L460 93" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<path d="M467 105H469" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<path d="M451 93L449 93" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<circle cx="461.5" cy="104.5" r="3.5" stroke="white" stroke-width="3" stroke-linecap="square"/>
+<circle cx="456.5" cy="93.5" r="3.5" transform="rotate(-180 456.5 93.5)" stroke="white" stroke-width="3" stroke-linecap="square"/>
+</g>
+<defs>
+<radialGradient id="paint0_radial_510_793" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(267.133 238.56) rotate(-90) scale(239.477 532.255)">
+<stop offset="0.394231" style="stop-color:black;stop-opacity:1;"/>
+<stop offset="0.740385" stop-opacity="0.63" style="stop-color:black;stop-opacity:0.63;"/>
+<stop offset="1" stop-opacity="0" style="stop-color:none;stop-opacity:0;"/>
+</radialGradient>
+<clipPath id="clip0_510_793">
+<rect width="540" height="149" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+  </div>
+
+  <!-- Nav bar — shape icons, fixed bottom bar for settings -->
+  <div class="nav-bar" id="navBar">
+    <svg width="179" height="20" viewBox="0 0 179 20" fill="none">
+      <path d="M33.5 16L38.9274 10.4032C41.2187 8.04024 39.5959 4 36.3554 4H30.6446C27.4041 4 25.7813 8.04024 28.0726 10.4032L33.5 16Z" fill="#525252"/>
+      <circle cx="62" cy="10" r="6" fill="#525252"/>
+      <rect x="84" y="4" width="12" height="12" fill="#525252"/>
+      <path d="M112 10C112 6.68629 114.686 4 118 4C121.314 4 124 6.68629 124 10V16H112V10Z" fill="#525252"/>
+      <path d="M140 4H152V8.43193H140V4Z" fill="#D9D9D9"/>
+      <path d="M140 11.5681H152V16H140V11.5681Z" fill="#D9D9D9"/>
     </svg>
   </div>
 
-  <div class="settings-drawer" id="settingsDrawer">
+  <!-- Settings panel — slides up behind nav bar -->
+  <div class="settings-panel" id="settingsPanel">
     <div class="dismiss-handle" id="dismissHandle"></div>
     <div class="top-bar">
       <span class="time" id="clock">12:30</span>
@@ -272,17 +300,6 @@
       </div>
     </div>
 
-    <div class="slider">
-      <svg width="179" height="20" viewBox="0 0 179 20" fill="none">
-        <path d="M33.5 16L38.9274 10.4032C41.2187 8.04024 39.5959 4 36.3554 4H30.6446C27.4041 4 25.7813 8.04024 28.0726 10.4032L33.5 16Z" fill="#525252"/>
-        <circle cx="62" cy="10" r="6" fill="#525252"/>
-        <rect x="84" y="4" width="12" height="12" fill="#525252"/>
-        <path d="M112 10C112 6.68629 114.686 4 118 4C121.314 4 124 6.68629 124 10V16H112V10Z" fill="#525252"/>
-        <path d="M140 4H152V8.43193H140V4Z" fill="#D9D9D9"/>
-        <path d="M140 11.5681H152V16H140V11.5681Z" fill="#D9D9D9"/>
-      </svg>
-    </div>
-
     <div class="scroll-indicator">
       <div class="scroll-dot active"></div>
       <div class="scroll-dot"></div>
@@ -300,131 +317,154 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // --- Swipe up/down: only from dedicated zones ---
-  const bottomBar = document.getElementById('bottomBar');
-  const drawer = document.getElementById('settingsDrawer');
+  // Elements
+  const dock = document.getElementById('dock');
+  const navBar = document.getElementById('navBar');
+  const panel = document.getElementById('settingsPanel');
   const swipeZone = document.getElementById('swipeZone');
   const dismissHandle = document.getElementById('dismissHandle');
-  let state = 0; // 0=home, 1=dock, 2=settings
+  let state = 0; // 0=home, 1=dock visible, 2=settings open
+
+  function enterState(s) {
+    state = s;
+    if (s === 0) {
+      dock.classList.remove('visible', 'fade');
+      dock.style.transform = '';
+      navBar.classList.remove('visible');
+      panel.classList.remove('visible'); panel.style.transform = '';
+      swipeZone.style.pointerEvents = '';
+    } else if (s === 1) {
+      dock.classList.add('visible'); dock.classList.remove('fade');
+      dock.style.transform = '';
+      navBar.classList.remove('visible');
+      panel.classList.remove('visible'); panel.style.transform = '';
+      swipeZone.style.pointerEvents = '';
+    } else if (s === 2) {
+      dock.classList.add('visible', 'fade');
+      navBar.classList.add('visible');
+      panel.classList.add('visible'); panel.style.transform = '';
+      swipeZone.style.pointerEvents = 'none';
+    }
+  }
 
   function makeSwipeable(el, { onSwipe }) {
     let startY = 0, dy = 0, active = false;
-
     el.addEventListener('pointerdown', (e) => {
-      active = true;
-      startY = e.clientY;
-      dy = 0;
+      active = true; startY = e.clientY; dy = 0;
       el.setPointerCapture(e.pointerId);
-      bottomBar.style.transition = 'none';
-      drawer.style.transition = 'none';
+      dock.style.transition = 'none';
+      panel.style.transition = 'none';
     });
-
     el.addEventListener('pointermove', (e) => {
       if (!active) return;
       dy = startY - e.clientY;
       onSwipe('move', dy);
     });
-
-    el.addEventListener('pointerup', () => {
+    const end = () => {
       if (!active) return;
       active = false;
       const ease = '0.35s cubic-bezier(0.25, 1, 0.5, 1)';
-      bottomBar.style.transition = `transform ${ease}`;
-      drawer.style.transition = `transform ${ease}`;
+      dock.style.transition = '';
+      panel.style.transition = `transform ${ease}`;
       onSwipe('end', dy);
-    });
-
-    el.addEventListener('pointercancel', () => {
-      if (!active) return;
-      active = false;
-      const ease = '0.35s cubic-bezier(0.25, 1, 0.5, 1)';
-      bottomBar.style.transition = `transform ${ease}`;
-      drawer.style.transition = `transform ${ease}`;
-      onSwipe('end', 0);
-    });
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', () => { active = false; end(); });
   }
 
-  // Swipe zone at bottom: swipe up to reveal dock → settings
+  // Swipe up from bottom
   makeSwipeable(swipeZone, {
     onSwipe(phase, dy) {
       if (state === 0) {
         if (phase === 'move' && dy > 0) {
-          if (dy <= 149) {
-            bottomBar.style.transform = `translateY(${100 * (1 - dy / 149)}%)`;
+          if (dy <= 80) {
+            dock.style.transform = `translateY(${100 * (1 - dy / 80)}%)`;
           } else {
-            bottomBar.style.transform = 'translateY(0%)';
-            const p = Math.min((dy - 149) / 620, 1);
-            drawer.style.transform = `translateY(${100 * (1 - p)}%)`;
+            dock.style.transform = 'translateY(0)';
+            const p = Math.min((dy - 80) / 540, 1);
+            panel.style.transform = `translateY(${620 * (1 - p)}px)`;
           }
         }
         if (phase === 'end') {
-          if (dy > 249) {
-            state = 2;
-            bottomBar.classList.add('visible'); bottomBar.style.transform = '';
-            drawer.classList.add('visible'); drawer.style.transform = '';
-            swipeZone.style.pointerEvents = 'none';
-          } else if (dy > 60) {
-            state = 1;
-            bottomBar.classList.add('visible'); bottomBar.style.transform = '';
-            drawer.style.transform = '';
+          if (dy > 180) {
+            enterState(2);
+          } else if (dy > 40) {
+            enterState(1);
           } else {
-            bottomBar.style.transform = ''; drawer.style.transform = '';
+            dock.style.transform = ''; panel.style.transform = '';
           }
         }
       } else if (state === 1) {
         if (phase === 'move' && dy > 0) {
-          const p = Math.min(dy / 620, 1);
-          drawer.style.transform = `translateY(${100 * (1 - p)}%)`;
+          const p = Math.min(dy / 540, 1);
+          panel.style.transform = `translateY(${620 * (1 - p)}px)`;
         }
         if (phase === 'move' && dy < 0) {
-          const p = Math.min(Math.abs(dy) / 149, 1);
-          bottomBar.style.transform = `translateY(${100 * p}%)`;
+          const p = Math.min(Math.abs(dy) / 80, 1);
+          dock.style.transform = `translateY(${100 * p}%)`;
         }
         if (phase === 'end') {
-          if (dy > 100) {
-            state = 2;
-            drawer.classList.add('visible'); drawer.style.transform = '';
-            swipeZone.style.pointerEvents = 'none';
-          } else if (dy < -60) {
-            state = 0;
-            bottomBar.classList.remove('visible'); bottomBar.style.transform = '';
+          if (dy > 80) {
+            enterState(2);
+          } else if (dy < -40) {
+            enterState(0);
           } else {
-            drawer.style.transform = ''; bottomBar.style.transform = '';
+            panel.style.transform = ''; dock.style.transform = '';
           }
         }
       }
     }
   });
 
-  // Dismiss handle at top of settings: swipe down to close
-  makeSwipeable(dismissHandle, {
+  // Swipe up from dock to reveal settings
+  makeSwipeable(dock, {
     onSwipe(phase, dy) {
-      if (state !== 2) return;
-      if (phase === 'move' && dy < 0) {
-        const p = Math.min(Math.abs(dy) / 620, 1);
-        drawer.style.transform = `translateY(${100 * p}%)`;
-      }
-      if (phase === 'end') {
-        if (dy < -100) {
-          state = 1;
-          drawer.classList.remove('visible'); drawer.style.transform = '';
-          swipeZone.style.pointerEvents = '';
-        } else {
-          drawer.style.transform = '';
+      if (state === 1) {
+        if (phase === 'move' && dy > 0) {
+          const p = Math.min(dy / 540, 1);
+          panel.style.transform = `translateY(${620 * (1 - p)}px)`;
+        }
+        if (phase === 'move' && dy < 0) {
+          const p = Math.min(Math.abs(dy) / 80, 1);
+          dock.style.transform = `translateY(${100 * p}%)`;
+        }
+        if (phase === 'end') {
+          if (dy > 80) {
+            enterState(2);
+          } else if (dy < -40) {
+            enterState(0);
+          } else {
+            panel.style.transform = ''; dock.style.transform = '';
+          }
         }
       }
     }
   });
 
-  // Drag-to-scroll for content area
+  // Swipe down from top to dismiss settings
+  makeSwipeable(dismissHandle, {
+    onSwipe(phase, dy) {
+      if (state !== 2) return;
+      if (phase === 'move' && dy < 0) {
+        const p = Math.min(Math.abs(dy) / 540, 1);
+        panel.style.transform = `translateY(${620 * p}px)`;
+      }
+      if (phase === 'end') {
+        if (dy < -80) {
+          enterState(1);
+        } else {
+          panel.style.transform = '';
+        }
+      }
+    }
+  });
+
+  // Drag-to-scroll for content
   const contentScroll = document.getElementById('contentScroll');
   let cDrag = false, cStartY = 0, cScrollTop = 0;
-
   contentScroll.addEventListener('pointerdown', (e) => {
     if (e.target.closest('.dot-grid') || e.target.closest('.sound-bars')) return;
-    cDrag = true;
-    cStartY = e.clientY;
-    cScrollTop = contentScroll.scrollTop;
+    cDrag = true; cStartY = e.clientY; cScrollTop = contentScroll.scrollTop;
     contentScroll.setPointerCapture(e.pointerId);
   });
   contentScroll.addEventListener('pointermove', (e) => {
@@ -436,7 +476,6 @@
 
   // Scroll indicator
   const scrollDots = document.querySelectorAll('.scroll-dot');
-
   contentScroll.addEventListener('scroll', () => {
     const max = contentScroll.scrollHeight - contentScroll.clientHeight;
     if (max <= 0) return;
@@ -448,15 +487,12 @@
   const dotGrid = document.getElementById('dotGrid');
   const COLS = 20, ROWS = 5;
   let brightnessCol = 10, dots = [];
-
   function buildDotGrid() {
-    dotGrid.innerHTML = '';
-    dots = [];
+    dotGrid.innerHTML = ''; dots = [];
     for (let r = 0; r < ROWS; r++)
       for (let c = 0; c < COLS; c++) {
         const d = document.createElement('div');
-        d.className = 'dot';
-        dotGrid.appendChild(d);
+        d.className = 'dot'; dotGrid.appendChild(d);
         dots.push({ el: d, col: c });
       }
     updateDots();
@@ -467,7 +503,6 @@
     brightnessCol = Math.max(0, Math.min(COLS, Math.round(((x - r.left) / r.width) * COLS)));
     updateDots();
   }
-
   let dragB = false;
   dotGrid.addEventListener('pointerdown', (e) => { dragB = true; dotGrid.setPointerCapture(e.pointerId); setBrightness(e.clientX); });
   dotGrid.addEventListener('pointermove', (e) => { if (dragB) setBrightness(e.clientX); });
@@ -477,15 +512,11 @@
   const soundBarsEl = document.getElementById('soundBars');
   const TOTAL_BARS = 26;
   let soundLevel = 12, bars = [];
-
   function buildSoundBars() {
-    soundBarsEl.innerHTML = '';
-    bars = [];
+    soundBarsEl.innerHTML = ''; bars = [];
     for (let i = 0; i < TOTAL_BARS; i++) {
       const b = document.createElement('div');
-      b.className = 'sound-bar';
-      soundBarsEl.appendChild(b);
-      bars.push(b);
+      b.className = 'sound-bar'; soundBarsEl.appendChild(b); bars.push(b);
     }
     updateBars();
   }
@@ -495,7 +526,6 @@
     soundLevel = Math.max(0, Math.min(TOTAL_BARS, Math.round(((x - r.left) / r.width) * TOTAL_BARS)));
     updateBars();
   }
-
   let dragS = false;
   soundBarsEl.addEventListener('pointerdown', (e) => { dragS = true; soundBarsEl.setPointerCapture(e.pointerId); setSound(e.clientX); });
   soundBarsEl.addEventListener('pointermove', (e) => { if (dragS) setSound(e.clientX); });
