@@ -17,7 +17,6 @@
     min-height: 100vh;
     font-family: 'Sora', sans-serif;
     overflow: hidden;
-    touch-action: none;
     -webkit-user-select: none;
     user-select: none;
   }
@@ -30,20 +29,24 @@
     background: #000;
   }
 
-  /* Home screen */
   .home-screen {
     position: absolute;
     inset: 0;
     z-index: 1;
   }
+  .home-screen img { width: 100%; height: 100%; object-fit: cover; }
 
-  .home-screen img {
+  /* Invisible swipe-up zone at bottom */
+  .swipe-zone {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 80px;
+    z-index: 5;
+    touch-action: none;
   }
 
-  /* Bottom dock bar */
   .bottom-bar {
     position: absolute;
     bottom: 0;
@@ -55,13 +58,8 @@
     transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
     pointer-events: none;
   }
+  .bottom-bar.visible { transform: translateY(0); pointer-events: auto; }
 
-  .bottom-bar.visible {
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  /* Settings drawer */
   .settings-drawer {
     position: absolute;
     inset: 0;
@@ -70,13 +68,20 @@
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
+  .settings-drawer.visible { transform: translateY(0); }
 
-  .settings-drawer.visible {
-    transform: translateY(0);
+  /* Dismiss handle at top of settings */
+  .dismiss-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    z-index: 6;
+    touch-action: none;
+    cursor: grab;
   }
 
-
-  /* ---- Settings drawer internals ---- */
   .top-bar {
     display: flex;
     justify-content: space-between;
@@ -86,6 +91,7 @@
     height: 32px;
     left: calc(50% - 250px);
     top: 24px;
+    pointer-events: none;
   }
 
   .time {
@@ -97,14 +103,10 @@
   }
 
   .settings-icon {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: auto; cursor: pointer;
   }
-
   .settings-icon svg { width: 22px; height: 22px; fill: #D2D2D2; }
 
   .content-scroll {
@@ -118,7 +120,6 @@
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    touch-action: pan-y;
   }
   .content-scroll::-webkit-scrollbar { display: none; }
 
@@ -131,197 +132,69 @@
     padding-bottom: 20px;
   }
 
-  .row-small {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    width: 492px;
-    height: 52px;
-  }
-
+  .row-small { display: flex; justify-content: space-between; gap: 16px; width: 492px; height: 52px; }
   .tile-small {
-    width: 68px;
-    height: 52px;
-    background: #151515;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 68px; height: 52px; background: #151515; border-radius: 8px;
+    cursor: pointer; transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center;
   }
   .tile-small:active { background: #222; }
   .tile-small svg { width: 24px; height: 24px; fill: #888; }
 
-  .row-wide-2 {
-    display: flex;
-    gap: 16px;
-    width: 492px;
-    height: 72px;
-  }
-
-  .tile-wide {
-    width: 240px;
-    height: 72px;
-    background: #151515;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
+  .row-wide-2 { display: flex; gap: 16px; width: 492px; height: 72px; }
+  .tile-wide { width: 240px; height: 72px; background: #151515; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
   .tile-wide:active { background: #222; }
-
-  .tile-medium {
-    width: 110px;
-    height: 72px;
-    background: #151515;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
+  .tile-medium { width: 110px; height: 72px; background: #151515; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
   .tile-medium:active { background: #222; }
-
-  .row-4 {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    width: 492px;
-    height: 72px;
-  }
-
-  .row-m-w-m {
-    display: flex;
-    gap: 16px;
-    width: 492px;
-    height: 72px;
-  }
-
-  .row-controls {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    width: 492px;
-    height: 60px;
-  }
+  .row-4 { display: flex; justify-content: space-between; gap: 16px; width: 492px; height: 72px; }
+  .row-m-w-m { display: flex; gap: 16px; width: 492px; height: 72px; }
+  .row-controls { display: flex; justify-content: space-between; gap: 20px; width: 492px; height: 60px; }
 
   .brightness-panel {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    gap: 10px;
-    width: 238px;
-    height: 60px;
-    background: #151515;
-    border-radius: 8px;
-    cursor: pointer;
+    display: flex; align-items: center; padding: 10px; gap: 10px;
+    width: 238px; height: 60px; background: #151515; border-radius: 8px;
   }
-
-  .brightness-icon {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  .brightness-icon { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .brightness-icon svg { width: 24px; height: 24px; }
 
   .dot-grid {
-    display: grid;
-    grid-template-columns: repeat(20, 3px);
-    grid-template-rows: repeat(5, 3px);
-    gap: 6px;
-    width: 176px;
-    height: 39px;
-    cursor: pointer;
+    display: grid; grid-template-columns: repeat(20, 3px); grid-template-rows: repeat(5, 3px);
+    gap: 6px; width: 176px; height: 39px; cursor: pointer; touch-action: none;
   }
-
-  .dot {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: #3A3A3A;
-    transition: background 0.05s;
-  }
+  .dot { width: 3px; height: 3px; border-radius: 50%; background: #3A3A3A; transition: background 0.05s; }
   .dot.active { background: #DDDDDD; }
 
   .sound-panel {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    gap: 10px;
-    width: 238px;
-    height: 60px;
-    background: #151515;
-    border-radius: 8px;
-    cursor: pointer;
+    display: flex; align-items: center; padding: 10px; gap: 10px;
+    width: 238px; height: 60px; background: #151515; border-radius: 8px;
   }
-
-  .sound-icon {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  .sound-icon { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .sound-icon svg { width: 24px; height: 24px; }
-
-  .sound-bars {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    width: 177px;
-    height: 40px;
-  }
-
-  .sound-bar {
-    width: 2px;
-    height: 40px;
-    border-radius: 2px;
-    background: #151515;
-  }
+  .sound-bars { display: flex; align-items: center; gap: 5px; width: 177px; height: 40px; touch-action: none; }
+  .sound-bar { width: 2px; height: 40px; border-radius: 2px; background: #151515; }
   .sound-bar.active { background: #DDDDDD; }
 
   .slider {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    position: absolute;
-    height: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 572px;
+    display: flex; justify-content: center; align-items: center; gap: 16px;
+    position: absolute; height: 20px; left: 50%; transform: translateX(-50%); top: 572px;
   }
-  .slider-icon { cursor: pointer; }
 
   .scroll-indicator {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    position: absolute;
-    width: 8px;
-    right: 8px;
-    top: 250px;
+    display: flex; flex-direction: column; gap: 20px;
+    position: absolute; width: 8px; right: 8px; top: 250px;
   }
-
-  .scroll-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #505050;
-  }
+  .scroll-dot { width: 8px; height: 8px; border-radius: 50%; background: #505050; }
   .scroll-dot.active { background: #D9D9D9; }
 </style>
 </head>
 <body>
 
 <div class="device-frame" id="deviceFrame">
-
-  <!-- Layer 1: Home screen -->
   <div class="home-screen"><img src="home.png" alt="Home"></div>
 
-  <!-- Layer 2: Bottom dock bar -->
+  <!-- Invisible zone at bottom for swipe-up -->
+  <div class="swipe-zone" id="swipeZone"></div>
+
   <div class="bottom-bar" id="bottomBar">
     <svg width="540" height="149" viewBox="0 0 540 149" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -330,9 +203,7 @@
           <stop offset="0.740385" stop-color="black" stop-opacity="0.63"/>
           <stop offset="1" stop-color="black" stop-opacity="0"/>
         </radialGradient>
-        <clipPath id="clip0">
-          <rect width="540" height="149" fill="white"/>
-        </clipPath>
+        <clipPath id="clip0"><rect width="540" height="149" fill="white"/></clipPath>
       </defs>
       <g clip-path="url(#clip0)">
         <ellipse cx="270.5" cy="129.5" rx="354.5" ry="159.5" fill="url(#paint0_radial)"/>
@@ -357,8 +228,8 @@
     </svg>
   </div>
 
-  <!-- Layer 3: Settings drawer -->
   <div class="settings-drawer" id="settingsDrawer">
+    <div class="dismiss-handle" id="dismissHandle"></div>
     <div class="top-bar">
       <span class="time" id="clock">12:30</span>
       <div class="settings-icon">
@@ -367,8 +238,7 @@
     </div>
 
     <div class="content-scroll" id="contentScroll">
-      <!-- Page 1 -->
-      <div class="content-page" data-page="0">
+      <div class="content-page">
         <div class="row-small">
           <div class="tile-small"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
           <div class="tile-small"><svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg></div>
@@ -377,76 +247,33 @@
           <div class="tile-small"><svg viewBox="0 0 24 24"><path d="M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z"/></svg></div>
           <div class="tile-small"><svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg></div>
         </div>
-
-        <div class="row-wide-2">
-          <div class="tile-wide"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-        </div>
-
-        <div class="row-4">
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-        </div>
-
-        <div class="row-m-w-m">
-          <div class="tile-medium"></div>
-          <div class="tile-wide"></div>
-          <div class="tile-medium"></div>
-        </div>
-
+        <div class="row-wide-2"><div class="tile-wide"></div><div class="tile-medium"></div><div class="tile-medium"></div></div>
+        <div class="row-4"><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div></div>
+        <div class="row-m-w-m"><div class="tile-medium"></div><div class="tile-wide"></div><div class="tile-medium"></div></div>
         <div class="row-controls">
           <div class="brightness-panel" id="brightnessPanel">
             <div class="brightness-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="4" stroke="#DDDDDD" stroke-width="2.5" fill="none"/>
-                <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#DDDDDD" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="#DDD" stroke-width="2.5" fill="none"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#DDD" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>
             </div>
             <div class="dot-grid" id="dotGrid"></div>
           </div>
-
           <div class="sound-panel" id="soundPanel">
             <div class="sound-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 9v6h4l5 5V4L7 9H3z" fill="#DDDDDD"/>
-                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="#DDDDDD" opacity="0.6"/>
-                <path d="M19 12c0-3.53-2.04-6.58-5-8.05v2.18c1.82 1.27 3 3.38 3 5.87s-1.18 4.6-3 5.87v2.18c2.96-1.47 5-4.52 5-8.05z" fill="#DDDDDD" opacity="0.2"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="#DDD"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="#DDD" opacity="0.6"/><path d="M19 12c0-3.53-2.04-6.58-5-8.05v2.18c1.82 1.27 3 3.38 3 5.87s-1.18 4.6-3 5.87v2.18c2.96-1.47 5-4.52 5-8.05z" fill="#DDD" opacity="0.2"/></svg>
             </div>
             <div class="sound-bars" id="soundBars"></div>
           </div>
         </div>
       </div>
-
-      <!-- Page 2 -->
-      <div class="content-page" data-page="1">
-        <div class="row-wide-2">
-          <div class="tile-wide"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-        </div>
-
-        <div class="row-4">
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-        </div>
-
-        <div class="row-4">
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-          <div class="tile-medium"></div>
-        </div>
+      <div class="content-page">
+        <div class="row-wide-2"><div class="tile-wide"></div><div class="tile-medium"></div><div class="tile-medium"></div></div>
+        <div class="row-4"><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div></div>
+        <div class="row-4"><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div><div class="tile-medium"></div></div>
       </div>
     </div>
 
     <div class="slider">
-      <svg width="179" height="20" viewBox="0 0 179 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="179" height="20" viewBox="0 0 179 20" fill="none">
         <path d="M33.5 16L38.9274 10.4032C41.2187 8.04024 39.5959 4 36.3554 4H30.6446C27.4041 4 25.7813 8.04024 28.0726 10.4032L33.5 16Z" fill="#525252"/>
         <circle cx="62" cy="10" r="6" fill="#525252"/>
         <rect x="84" y="4" width="12" height="12" fill="#525252"/>
@@ -473,217 +300,186 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Swipe state machine: home → dock → settings
-  // Swipe down reverses: settings → dock → home
+  // --- Swipe up/down: only from dedicated zones ---
   const bottomBar = document.getElementById('bottomBar');
-  const settingsDrawer = document.getElementById('settingsDrawer');
-  const deviceFrame = document.getElementById('deviceFrame');
-  let state = 0; // 0 = home, 1 = dock visible, 2 = settings open
+  const drawer = document.getElementById('settingsDrawer');
+  const swipeZone = document.getElementById('swipeZone');
+  const dismissHandle = document.getElementById('dismissHandle');
+  let state = 0; // 0=home, 1=dock, 2=settings
 
-  let startY = 0;
-  let currentY = 0;
-  let swiping = false;
+  function makeSwipeable(el, { onSwipe }) {
+    let startY = 0, dy = 0, active = false;
 
-  deviceFrame.addEventListener('mousedown', onStart);
-  deviceFrame.addEventListener('touchstart', onStart, { passive: false });
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('touchmove', onMove, { passive: false });
-  window.addEventListener('mouseup', onEnd);
-  window.addEventListener('touchend', onEnd);
+    el.addEventListener('pointerdown', (e) => {
+      active = true;
+      startY = e.clientY;
+      dy = 0;
+      el.setPointerCapture(e.pointerId);
+      bottomBar.style.transition = 'none';
+      drawer.style.transition = 'none';
+    });
 
-  function getY(e) {
-    return e.touches ? e.touches[0].clientY : e.clientY;
+    el.addEventListener('pointermove', (e) => {
+      if (!active) return;
+      dy = startY - e.clientY;
+      onSwipe('move', dy);
+    });
+
+    el.addEventListener('pointerup', () => {
+      if (!active) return;
+      active = false;
+      const ease = '0.35s cubic-bezier(0.25, 1, 0.5, 1)';
+      bottomBar.style.transition = `transform ${ease}`;
+      drawer.style.transition = `transform ${ease}`;
+      onSwipe('end', dy);
+    });
+
+    el.addEventListener('pointercancel', () => {
+      if (!active) return;
+      active = false;
+      const ease = '0.35s cubic-bezier(0.25, 1, 0.5, 1)';
+      bottomBar.style.transition = `transform ${ease}`;
+      drawer.style.transition = `transform ${ease}`;
+      onSwipe('end', 0);
+    });
   }
 
-  const SWIPE_ZONE = 80; // pixels from bottom edge to start swipe
-
-  function onStart(e) {
-    if (e.target.closest('.dot-grid') || e.target.closest('.sound-bars') || e.target.closest('.content-scroll')) return;
-    const frameRect = deviceFrame.getBoundingClientRect();
-    const touchY = getY(e);
-    const distFromBottom = frameRect.bottom - touchY;
-
-    if (state === 0 && distFromBottom > SWIPE_ZONE) return;
-    if (state === 1 && distFromBottom > SWIPE_ZONE) return;
-    // When settings open, only allow swipe-down from the top bar
-    const distFromTop = touchY - frameRect.top;
-    if (state === 2 && distFromTop > 70) return;
-
-    startY = touchY;
-    currentY = startY;
-    swiping = true;
-    bottomBar.style.transition = 'none';
-    settingsDrawer.style.transition = 'none';
-  }
-
-  const DOCK_HEIGHT = 149;
-  const DRAWER_HEIGHT = 620;
-  const DOCK_THRESHOLD = 60;
-  const DRAWER_THRESHOLD = 100;
-
-  function onMove(e) {
-    if (!swiping) return;
-    currentY = getY(e);
-    const dy = startY - currentY;
-
-    if (state === 0 && dy > 0) {
-      // Swiping up from home: dock slides in, then settings drawer continues
-      if (dy <= DOCK_HEIGHT) {
-        const progress = dy / DOCK_HEIGHT;
-        bottomBar.style.transform = `translateY(${100 * (1 - progress)}%)`;
-        settingsDrawer.style.transform = `translateY(100%)`;
-      } else {
-        bottomBar.style.transform = `translateY(0%)`;
-        const drawerDy = dy - DOCK_HEIGHT;
-        const progress = Math.min(drawerDy / DRAWER_HEIGHT, 1);
-        settingsDrawer.style.transform = `translateY(${100 * (1 - progress)}%)`;
-      }
-    } else if (state === 1 && dy > 0) {
-      const progress = Math.min(dy / DRAWER_HEIGHT, 1);
-      settingsDrawer.style.transform = `translateY(${100 * (1 - progress)}%)`;
-    } else if (state === 1 && dy < 0) {
-      const progress = Math.min(Math.abs(dy) / DOCK_HEIGHT, 1);
-      bottomBar.style.transform = `translateY(${100 * progress}%)`;
-    } else if (state === 2 && dy < 0) {
-      const progress = Math.min(Math.abs(dy) / DRAWER_HEIGHT, 1);
-      settingsDrawer.style.transform = `translateY(${100 * progress}%)`;
-    }
-  }
-
-  function onEnd() {
-    if (!swiping) return;
-    swiping = false;
-    const dy = startY - currentY;
-    const ease = '0.35s cubic-bezier(0.25, 1, 0.5, 1)';
-    bottomBar.style.transition = `transform ${ease}`;
-    settingsDrawer.style.transition = `transform ${ease}`;
-
-    if (state === 0) {
-      if (dy > DOCK_HEIGHT + DRAWER_THRESHOLD) {
-        // Went past dock and far enough for settings
-        state = 2;
-        bottomBar.classList.add('visible');
-        bottomBar.style.transform = '';
-        settingsDrawer.classList.add('visible');
-        settingsDrawer.style.transform = '';
-      } else if (dy > DOCK_THRESHOLD) {
-        // Just enough for dock
-        state = 1;
-        bottomBar.classList.add('visible');
-        bottomBar.style.transform = '';
-        settingsDrawer.style.transform = '';
-      } else {
-        // Snap back
-        bottomBar.style.transform = '';
-        settingsDrawer.style.transform = '';
-      }
-    } else if (state === 1) {
-      if (dy > DRAWER_THRESHOLD) {
-        state = 2;
-        settingsDrawer.classList.add('visible');
-        settingsDrawer.style.transform = '';
-      } else if (dy < -DOCK_THRESHOLD) {
-        state = 0;
-        bottomBar.classList.remove('visible');
-        bottomBar.style.transform = '';
-      } else {
-        settingsDrawer.style.transform = '';
-        bottomBar.style.transform = '';
-      }
-    } else if (state === 2) {
-      if (dy < -DRAWER_THRESHOLD) {
-        state = 1;
-        settingsDrawer.classList.remove('visible');
-        settingsDrawer.style.transform = '';
-      } else {
-        settingsDrawer.style.transform = '';
+  // Swipe zone at bottom: swipe up to reveal dock → settings
+  makeSwipeable(swipeZone, {
+    onSwipe(phase, dy) {
+      if (state === 0) {
+        if (phase === 'move' && dy > 0) {
+          if (dy <= 149) {
+            bottomBar.style.transform = `translateY(${100 * (1 - dy / 149)}%)`;
+          } else {
+            bottomBar.style.transform = 'translateY(0%)';
+            const p = Math.min((dy - 149) / 620, 1);
+            drawer.style.transform = `translateY(${100 * (1 - p)}%)`;
+          }
+        }
+        if (phase === 'end') {
+          if (dy > 249) {
+            state = 2;
+            bottomBar.classList.add('visible'); bottomBar.style.transform = '';
+            drawer.classList.add('visible'); drawer.style.transform = '';
+          } else if (dy > 60) {
+            state = 1;
+            bottomBar.classList.add('visible'); bottomBar.style.transform = '';
+            drawer.style.transform = '';
+          } else {
+            bottomBar.style.transform = ''; drawer.style.transform = '';
+          }
+        }
+      } else if (state === 1) {
+        if (phase === 'move' && dy > 0) {
+          const p = Math.min(dy / 620, 1);
+          drawer.style.transform = `translateY(${100 * (1 - p)}%)`;
+        }
+        if (phase === 'move' && dy < 0) {
+          const p = Math.min(Math.abs(dy) / 149, 1);
+          bottomBar.style.transform = `translateY(${100 * p}%)`;
+        }
+        if (phase === 'end') {
+          if (dy > 100) {
+            state = 2;
+            drawer.classList.add('visible'); drawer.style.transform = '';
+          } else if (dy < -60) {
+            state = 0;
+            bottomBar.classList.remove('visible'); bottomBar.style.transform = '';
+          } else {
+            drawer.style.transform = ''; bottomBar.style.transform = '';
+          }
+        }
       }
     }
-  }
+  });
+
+  // Dismiss handle at top of settings: swipe down to close
+  makeSwipeable(dismissHandle, {
+    onSwipe(phase, dy) {
+      if (state !== 2) return;
+      if (phase === 'move' && dy < 0) {
+        const p = Math.min(Math.abs(dy) / 620, 1);
+        drawer.style.transform = `translateY(${100 * p}%)`;
+      }
+      if (phase === 'end') {
+        if (dy < -100) {
+          state = 1;
+          drawer.classList.remove('visible'); drawer.style.transform = '';
+        } else {
+          drawer.style.transform = '';
+        }
+      }
+    }
+  });
 
   // Scroll indicator
   const contentScroll = document.getElementById('contentScroll');
   const scrollDots = document.querySelectorAll('.scroll-dot');
 
   contentScroll.addEventListener('scroll', () => {
-    const pct = contentScroll.scrollTop / (contentScroll.scrollHeight - contentScroll.clientHeight);
-    const page = Math.round(pct * (scrollDots.length - 1));
+    const max = contentScroll.scrollHeight - contentScroll.clientHeight;
+    if (max <= 0) return;
+    const page = Math.round((contentScroll.scrollTop / max) * (scrollDots.length - 1));
     scrollDots.forEach((dot, i) => dot.classList.toggle('active', i === page));
   });
 
-  // Brightness dot grid
+  // Brightness
   const dotGrid = document.getElementById('dotGrid');
   const COLS = 20, ROWS = 5;
-  let brightnessCol = 10;
-  let dots = [];
+  let brightnessCol = 10, dots = [];
 
   function buildDotGrid() {
     dotGrid.innerHTML = '';
     dots = [];
-    for (let r = 0; r < ROWS; r++) {
+    for (let r = 0; r < ROWS; r++)
       for (let c = 0; c < COLS; c++) {
-        const dot = document.createElement('div');
-        dot.className = 'dot';
-        dotGrid.appendChild(dot);
-        dots.push({ el: dot, col: c });
+        const d = document.createElement('div');
+        d.className = 'dot';
+        dotGrid.appendChild(d);
+        dots.push({ el: d, col: c });
       }
-    }
-    updateDotGrid();
+    updateDots();
+  }
+  function updateDots() { dots.forEach(({ el, col }) => el.classList.toggle('active', col < brightnessCol)); }
+  function setBrightness(x) {
+    const r = dotGrid.getBoundingClientRect();
+    brightnessCol = Math.max(0, Math.min(COLS, Math.round(((x - r.left) / r.width) * COLS)));
+    updateDots();
   }
 
-  function updateDotGrid() {
-    dots.forEach(({ el, col }) => el.classList.toggle('active', col < brightnessCol));
-  }
+  let dragB = false;
+  dotGrid.addEventListener('pointerdown', (e) => { dragB = true; dotGrid.setPointerCapture(e.pointerId); setBrightness(e.clientX); });
+  dotGrid.addEventListener('pointermove', (e) => { if (dragB) setBrightness(e.clientX); });
+  dotGrid.addEventListener('pointerup', () => dragB = false);
 
-  function setBrightnessFromX(clientX) {
-    const rect = dotGrid.getBoundingClientRect();
-    brightnessCol = Math.max(0, Math.min(COLS, Math.round(((clientX - rect.left) / rect.width) * COLS)));
-    updateDotGrid();
-  }
-
-  let draggingBrightness = false;
-  dotGrid.addEventListener('mousedown', (e) => { draggingBrightness = true; setBrightnessFromX(e.clientX); });
-  dotGrid.addEventListener('touchstart', (e) => { draggingBrightness = true; setBrightnessFromX(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mousemove', (e) => { if (draggingBrightness) setBrightnessFromX(e.clientX); });
-  window.addEventListener('touchmove', (e) => { if (draggingBrightness) setBrightnessFromX(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mouseup', () => draggingBrightness = false);
-  window.addEventListener('touchend', () => draggingBrightness = false);
-
-  // Sound bars
+  // Sound
   const soundBarsEl = document.getElementById('soundBars');
   const TOTAL_BARS = 26;
-  let soundLevel = 12;
-  let bars = [];
+  let soundLevel = 12, bars = [];
 
   function buildSoundBars() {
     soundBarsEl.innerHTML = '';
     bars = [];
     for (let i = 0; i < TOTAL_BARS; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'sound-bar';
-      soundBarsEl.appendChild(bar);
-      bars.push(bar);
+      const b = document.createElement('div');
+      b.className = 'sound-bar';
+      soundBarsEl.appendChild(b);
+      bars.push(b);
     }
-    updateSoundBars();
+    updateBars();
+  }
+  function updateBars() { bars.forEach((b, i) => b.classList.toggle('active', i < soundLevel)); }
+  function setSound(x) {
+    const r = soundBarsEl.getBoundingClientRect();
+    soundLevel = Math.max(0, Math.min(TOTAL_BARS, Math.round(((x - r.left) / r.width) * TOTAL_BARS)));
+    updateBars();
   }
 
-  function updateSoundBars() {
-    bars.forEach((bar, i) => bar.classList.toggle('active', i < soundLevel));
-  }
-
-  function setSoundFromX(clientX) {
-    const rect = soundBarsEl.getBoundingClientRect();
-    soundLevel = Math.max(0, Math.min(TOTAL_BARS, Math.round(((clientX - rect.left) / rect.width) * TOTAL_BARS)));
-    updateSoundBars();
-  }
-
-  let draggingSound = false;
-  soundBarsEl.addEventListener('mousedown', (e) => { draggingSound = true; setSoundFromX(e.clientX); });
-  soundBarsEl.addEventListener('touchstart', (e) => { draggingSound = true; setSoundFromX(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mousemove', (e) => { if (draggingSound) setSoundFromX(e.clientX); });
-  window.addEventListener('touchmove', (e) => { if (draggingSound) setSoundFromX(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mouseup', () => draggingSound = false);
-  window.addEventListener('touchend', () => draggingSound = false);
+  let dragS = false;
+  soundBarsEl.addEventListener('pointerdown', (e) => { dragS = true; soundBarsEl.setPointerCapture(e.pointerId); setSound(e.clientX); });
+  soundBarsEl.addEventListener('pointermove', (e) => { if (dragS) setSound(e.clientX); });
+  soundBarsEl.addEventListener('pointerup', () => dragS = false);
 
   buildDotGrid();
   buildSoundBars();
