@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings Drawer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .settings-drawer {
+    position: relative;
+    width: 540px;
+    height: 620px;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    width: 500px;
+    height: 32px;
+    left: calc(50% - 250px);
+    top: 24px;
+  }
+
+  .time {
+    font-family: 'Sora', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 130%;
+    color: #D2D2D2;
+  }
+
+  .settings-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .settings-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: #D2D2D2;
+  }
+
+  /* Main content area */
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    position: absolute;
+    width: 492px;
+    left: 22px;
+    top: 76px;
+  }
+
+  /* Row of 6 small tiles */
+  .row-small {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    width: 492px;
+    height: 52px;
+  }
+
+  .tile-small {
+    width: 68px;
+    height: 52px;
+    background: #151515;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile-small:hover { background: #222; }
+
+  .tile-small svg {
+    width: 24px;
+    height: 24px;
+    fill: #888;
+  }
+
+  /* Row with 1 wide + 2 medium */
+  .row-wide-2 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 492px;
+    height: 72px;
+  }
+
+  .tile-wide {
+    width: 240px;
+    height: 72px;
+    background: #151515;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tile-wide:hover { background: #222; }
+
+  .tile-medium {
+    width: 110px;
+    height: 72px;
+    background: #151515;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tile-medium:hover { background: #222; }
+
+  /* Row of 4 medium */
+  .row-4 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 492px;
+    height: 72px;
+  }
+
+  /* Row with medium + wide + medium */
+  .row-m-w-m {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 492px;
+    height: 72px;
+  }
+
+  /* Bottom controls row */
+  .row-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    width: 492px;
+    height: 60px;
+  }
+
+  /* Brightness panel */
+  .brightness-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 238px;
+    height: 60px;
+    background: #151515;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .brightness-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brightness-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .dot-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    gap: 6px;
+    width: 176px;
+    height: 39px;
+  }
+
+  .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #3A3A3A;
+  }
+
+  .dot.active {
+    background: #DDDDDD;
+  }
+
+  /* Sound panel */
+  .sound-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 238px;
+    height: 60px;
+    background: #151515;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .sound-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sound-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sound-bars {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    width: 177px;
+    height: 40px;
+  }
+
+  .sound-bar {
+    width: 2px;
+    height: 40px;
+    border-radius: 2px;
+    background: #151515;
+  }
+
+  .sound-bar.active {
+    background: #DDDDDD;
+  }
+
+  /* Page slider dots */
+  .slider {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    position: absolute;
+    height: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 572px;
+  }
+
+  .slider-dot {
+    width: 12px;
+    height: 12px;
+    background: #525252;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .slider-dot.rect {
+    border-radius: 2px;
+    width: 13px;
+  }
+
+  .slider-dot.active {
+    background: #D9D9D9;
+  }
+
+  /* Right scroll indicator */
+  .scroll-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    position: absolute;
+    width: 8px;
+    right: 8px;
+    top: 250px;
+  }
+
+  .scroll-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #505050;
+  }
+
+  .scroll-dot.active {
+    background: #D9D9D9;
+  }
+</style>
+</head>
+<body>
+
+<div class="settings-drawer">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="time" id="clock">12:30</span>
+    <div class="settings-icon">
+      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <!-- Row 1: 6 small tiles -->
+    <div class="row-small">
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      </div>
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+      </div>
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM5 15h14v3H5z"/></svg>
+      </div>
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z"/></svg>
+      </div>
+      <div class="tile-small">
+        <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+      </div>
+    </div>
+
+    <!-- Row 2: 1 wide + 2 medium -->
+    <div class="row-wide-2">
+      <div class="tile-wide"></div>
+      <div class="tile-medium"></div>
+      <div class="tile-medium"></div>
+    </div>
+
+    <!-- Row 3: 4 medium -->
+    <div class="row-4">
+      <div class="tile-medium"></div>
+      <div class="tile-medium"></div>
+      <div class="tile-medium"></div>
+      <div class="tile-medium"></div>
+    </div>
+
+    <!-- Row 4: medium + wide + medium -->
+    <div class="row-m-w-m">
+      <div class="tile-medium"></div>
+      <div class="tile-wide"></div>
+      <div class="tile-medium"></div>
+    </div>
+
+    <!-- Row 5: Brightness + Sound -->
+    <div class="row-controls">
+      <!-- Brightness -->
+      <div class="brightness-panel" id="brightnessPanel">
+        <div class="brightness-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="4" stroke="#DDDDDD" stroke-width="2.5" fill="none"/>
+            <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#DDDDDD" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="dot-grid" id="dotGrid"></div>
+      </div>
+
+      <!-- Sound -->
+      <div class="sound-panel" id="soundPanel">
+        <div class="sound-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9v6h4l5 5V4L7 9H3z" fill="#DDDDDD"/>
+            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="#DDDDDD" opacity="0.6"/>
+            <path d="M19 12c0-3.53-2.04-6.58-5-8.05v2.18c1.82 1.27 3 3.38 3 5.87s-1.18 4.6-3 5.87v2.18c2.96-1.47 5-4.52 5-8.05z" fill="#DDDDDD" opacity="0.2"/>
+          </svg>
+        </div>
+        <div class="sound-bars" id="soundBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Slider -->
+  <div class="slider">
+    <div class="slider-dot rect"></div>
+    <div class="slider-dot"></div>
+    <div class="slider-dot"></div>
+    <div class="slider-dot"></div>
+    <div class="slider-dot active"></div>
+  </div>
+
+  <!-- Right Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-dot active"></div>
+    <div class="scroll-dot"></div>
+  </div>
+</div>
+
+<script>
+  // Live clock
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Brightness dot grid — 10 columns x 10 rows = 100 dots
+  const dotGrid = document.getElementById('dotGrid');
+  let brightnessLevel = 50; // percentage
+
+  function renderDotGrid() {
+    dotGrid.innerHTML = '';
+    const totalDots = 100;
+    const cols = 20;
+    // The pattern from the design: dots light up in a specific wave pattern
+    // We'll use brightness level to determine which dots are active
+    const activeDots = Math.round(totalDots * (brightnessLevel / 100));
+
+    // Create a wave-like pattern matching the design
+    const pattern = generateWavePattern(brightnessLevel);
+
+    for (let i = 0; i < totalDots; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (pattern[i] ? ' active' : '');
+      dotGrid.appendChild(dot);
+    }
+  }
+
+  function generateWavePattern(level) {
+    const pattern = new Array(100).fill(false);
+    const cols = 20;
+    const rows = 5;
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const idx = row * cols + col;
+        // Create a wave-like brightness visualization
+        const waveOffset = Math.sin((row / rows) * Math.PI * 2 + (col / cols) * Math.PI) * 30;
+        const threshold = level + waveOffset;
+        const colPercent = (col / cols) * 100;
+
+        if (colPercent < threshold - 20 || (colPercent > threshold + 10 && colPercent < threshold + 40)) {
+          pattern[idx] = true;
+        }
+      }
+    }
+    return pattern;
+  }
+
+  // Sound bars — 26 bars total, first 12 active
+  const soundBars = document.getElementById('soundBars');
+  let soundLevel = 12;
+
+  function renderSoundBars() {
+    soundBars.innerHTML = '';
+    const totalBars = 26;
+    for (let i = 0; i < totalBars; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'sound-bar' + (i < soundLevel ? ' active' : '');
+      soundBars.appendChild(bar);
+    }
+  }
+
+  // Click handlers for brightness
+  document.getElementById('brightnessPanel').addEventListener('click', (e) => {
+    const rect = dotGrid.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    brightnessLevel = pct;
+    renderDotGrid();
+  });
+
+  // Click handlers for sound
+  document.getElementById('soundPanel').addEventListener('click', (e) => {
+    const rect = soundBars.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    soundLevel = Math.max(0, Math.min(26, Math.round(pct * 26)));
+    renderSoundBars();
+  });
+
+  // Initialize
+  renderDotGrid();
+  renderSoundBars();
+</script>
+
+</body>
+</html>
