@@ -113,12 +113,12 @@
     left: 22px;
     width: 492px;
     bottom: 48px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
-    scroll-snap-type: y mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    touch-action: pan-y;
   }
   .content-scroll::-webkit-scrollbar { display: none; }
 
@@ -128,10 +128,7 @@
     align-items: flex-start;
     gap: 20px;
     width: 492px;
-    height: 100%;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    justify-content: flex-start;
+    padding-bottom: 20px;
   }
 
   .row-small {
@@ -498,10 +495,21 @@
     return e.touches ? e.touches[0].clientY : e.clientY;
   }
 
+  const SWIPE_ZONE = 80; // pixels from bottom edge to start swipe
+
   function onStart(e) {
-    if (e.target.closest('.dot-grid') || e.target.closest('.sound-bars')) return;
-    if (e.target.closest('.content-scroll')) return;
-    startY = getY(e);
+    if (e.target.closest('.dot-grid') || e.target.closest('.sound-bars') || e.target.closest('.content-scroll')) return;
+    const frameRect = deviceFrame.getBoundingClientRect();
+    const touchY = getY(e);
+    const distFromBottom = frameRect.bottom - touchY;
+
+    if (state === 0 && distFromBottom > SWIPE_ZONE) return;
+    if (state === 1 && distFromBottom > SWIPE_ZONE) return;
+    // When settings open, only allow swipe-down from the top bar
+    const distFromTop = touchY - frameRect.top;
+    if (state === 2 && distFromTop > 70) return;
+
+    startY = touchY;
     currentY = startY;
     swiping = true;
     bottomBar.style.transition = 'none';
@@ -598,17 +606,10 @@
   const scrollDots = document.querySelectorAll('.scroll-dot');
 
   contentScroll.addEventListener('scroll', () => {
-    const scrollTop = contentScroll.scrollTop;
-    const pageHeight = contentScroll.clientHeight;
-    const currentPage = Math.round(scrollTop / pageHeight);
-    scrollDots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentPage);
-    });
+    const pct = contentScroll.scrollTop / (contentScroll.scrollHeight - contentScroll.clientHeight);
+    const page = Math.round(pct * (scrollDots.length - 1));
+    scrollDots.forEach((dot, i) => dot.classList.toggle('active', i === page));
   });
-
-  // Prevent content scroll area from triggering swipe gestures
-  contentScroll.addEventListener('mousedown', (e) => e.stopPropagation());
-  contentScroll.addEventListener('touchstart', (e) => e.stopPropagation());
 
   // Brightness dot grid
   const dotGrid = document.getElementById('dotGrid');
